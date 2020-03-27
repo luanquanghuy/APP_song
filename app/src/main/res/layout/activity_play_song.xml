@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:id="@+id/header"
+        android:layout_marginTop="20dp"
+        android:layout_marginLeft="10dp"
+        android:layout_width="match_parent"
+        android:layout_height="56dp">
+        <ImageView
+            android:onClick="back"
+            android:id="@+id/quaylai"
+            android:src="@drawable/back"
+            android:layout_width="36dp"
+            android:layout_height="match_parent"/>
+        <TextView
+            android:id="@+id/musicname"
+            android:layout_toRightOf="@id/quaylai"
+            android:layout_marginLeft="10dp"
+            android:text="Simple Love"
+            android:textSize="20sp"
+            android:textColor="#000000"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/sn"
+            android:layout_below="@id/musicname"
+            android:layout_toRightOf="@id/quaylai"
+            android:layout_marginLeft="10dp"
+            android:text="Obito"
+            android:textSize="20sp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <ImageView
+            android:onClick="more"
+            android:layout_alignParentRight="true"
+            android:id="@+id/threeDot"
+            android:src="@drawable/threedot"
+            android:layout_width="36dp"
+            android:layout_height="match_parent"/>
+    </RelativeLayout>
+
+
+    <ScrollView
+        android:layout_above="@id/likeanddownload"
+        android:layout_below="@id/header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_marginTop="20dp"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <ImageView
+                android:layout_gravity="center"
+                android:id="@+id/imagesong"
+                android:layout_width="350dp"
+                android:src="@drawable/music"
+                android:layout_height="350dp"/>
+
+        </LinearLayout>
+
+    </ScrollView>
+
+
+
+
+    <RelativeLayout
+        android:layout_marginTop="10dp"
+        android:id="@+id/likeanddownload"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_above="@id/runtime"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageView
+            android:id="@+id/like"
+            android:src="@drawable/like"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <ImageView
+            android:onClick="download"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/download"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/runtime"
+        android:layout_margin="10dp"
+        android:layout_above="@+id/footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:id="@+id/timechay"
+            android:textSize="20sp"
+            android:text="0:00"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <SeekBar
+            android:id="@+id/seekbar"
+            android:progress="30"
+            android:outlineSpotShadowColor="#8A8A85"
+            android:layout_centerInParent="true"
+            android:layout_toRightOf="@id/timechay"
+            android:layout_toLeftOf="@id/thoiluong"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <TextView
+            android:id="@+id/thoiluong"
+            android:text="0:00"
+            android:textSize="20sp"
+            android:layout_alignParentRight="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/footer"
+        android:gravity="center"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <ImageButton
+            android:onClick="random"
+            android:id="@+id/random"
+            android:background="@null"
+            android:src="@drawable/random"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <ImageButton
+            android:onClick="presong"
+            android:id="@+id/pre"
+            android:background="@null"
+            android:src="@drawable/back_64"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+        <ImageButton
+            android:onClick="plsong"
+            android:id="@+id/play"
+            android:background="@null"
+            android:src="@drawable/pause_64"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+
+        <ImageButton
+            android:onClick="nextsong"
+            android:id="@+id/next"
+            android:layout_width="74dp"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:src="@drawable/next_64" />
+        <ImageButton
+            android:onClick="repeat"
+            android:id="@+id/repeat_all"
+            android:background="@null"
+            android:src="@drawable/repeat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+
+</RelativeLayout>
