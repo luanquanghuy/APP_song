@@ -22,7 +22,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class ListSong extends AppCompatActivity {
+public class ListSongActivity extends AppCompatActivity {
     private ArrayList<Song> songList;
     private ListView lvBaiHat;
     private SongAdapter adapter;
@@ -39,8 +39,8 @@ public class ListSong extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Bundle bundle = new Bundle();
-                bundle.putStringArray("songpick", new String[]{ songList.get(i).getTitle(), songList.get(i).getArtist(), songList.get(i).getUri(), String.valueOf(songList.get(i).getId()) });
-                Intent intent = new Intent(ListSong.this, PlaySong.class);
+                bundle.putSerializable("baihat", new DataSongs(songList, i));
+                Intent intent = new Intent(ListSongActivity.this, PlaySongActivity.class);
                 intent.putExtra("songpick", bundle);
                 startActivity(intent);
             }
@@ -48,7 +48,7 @@ public class ListSong extends AppCompatActivity {
         lvBaiHat.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, final int pos, long l) {
-                new AlertDialog.Builder(ListSong.this)
+                new AlertDialog.Builder(ListSongActivity.this)
                         .setTitle("Xoá "+songList.get(pos).getTitle())
                         .setMessage("Bạn có chắc chắn muốn xoá bài hát "+songList.get(pos).getTitle()+" - ca sĩ "+songList.get(pos).getArtist())
                         .setCancelable(true)

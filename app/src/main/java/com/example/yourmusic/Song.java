@@ -1,6 +1,8 @@
 package com.example.yourmusic;
 
-public class Song {
+import java.io.Serializable;
+
+public class Song implements Serializable {
 
     private long id;
     private String title;

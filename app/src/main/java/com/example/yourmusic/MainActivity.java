@@ -40,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (isReadStoragePermissionGranted()){
             finish();
-            startActivity(new Intent(MainActivity.this, ListSong.class));
+            startActivity(new Intent(MainActivity.this, ListSongActivity.class));
         }
     }
 
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
                         dbManager.addSong(songList.get(i));
                     }
                     finish();
-                    startActivity(new Intent(MainActivity.this, ListSong.class));
+                    startActivity(new Intent(MainActivity.this, ListSongActivity.class));
                 }else{
                     finish();
                 }

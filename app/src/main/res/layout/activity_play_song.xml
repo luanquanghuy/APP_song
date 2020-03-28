@@ -34,18 +34,10 @@
             android:textSize="20sp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
-        <ImageView
-            android:onClick="more"
-            android:layout_alignParentRight="true"
-            android:id="@+id/threeDot"
-            android:src="@drawable/threedot"
-            android:layout_width="36dp"
-            android:layout_height="match_parent"/>
     </RelativeLayout>
 
 
     <ScrollView
-        android:layout_above="@id/likeanddownload"
         android:layout_below="@id/header"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
@@ -66,29 +58,6 @@
     </ScrollView>
 
 
-
-
-    <RelativeLayout
-        android:layout_marginTop="10dp"
-        android:id="@+id/likeanddownload"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_above="@id/runtime"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <ImageView
-            android:id="@+id/like"
-            android:src="@drawable/like"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-        <ImageView
-            android:onClick="download"
-            android:layout_alignParentRight="true"
-            android:src="@drawable/download"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
-    </RelativeLayout>
-
     <RelativeLayout
         android:id="@+id/runtime"
         android:layout_margin="10dp"
@@ -103,7 +72,7 @@
             android:layout_height="wrap_content"/>
         <SeekBar
             android:id="@+id/seekbar"
-            android:progress="30"
+            android:progress="0"
             android:outlineSpotShadowColor="#8A8A85"
             android:layout_centerInParent="true"
             android:layout_toRightOf="@id/timechay"
@@ -127,13 +96,15 @@
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <ImageButton
-            android:onClick="random"
-            android:id="@+id/random"
-            android:background="@null"
-            android:src="@drawable/random"
+            android:id="@+id/repeat_all"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:onClick="repeat"
+            android:src="@drawable/repeat" />
+
         <ImageButton
             android:onClick="presong"
             android:id="@+id/pre"
@@ -145,9 +116,9 @@
             android:onClick="plsong"
             android:id="@+id/play"
             android:background="@null"
-            android:src="@drawable/pause_64"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+            android:src="@drawable/play"
+            android:layout_width="55dp"
+            android:layout_height="55dp"/>
 
         <ImageButton
             android:onClick="nextsong"
@@ -156,13 +127,15 @@
             android:layout_height="wrap_content"
             android:background="@null"
             android:src="@drawable/next_64" />
+
         <ImageButton
-            android:onClick="repeat"
-            android:id="@+id/repeat_all"
+            android:onClick="stopsong"
             android:background="@null"
-            android:src="@drawable/repeat"
+            android:src="@drawable/stop"
+            android:scaleType="fitCenter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
+
     </LinearLayout>
 
 
