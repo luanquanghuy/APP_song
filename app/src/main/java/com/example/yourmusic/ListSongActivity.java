@@ -21,9 +21,10 @@ import android.widget.Toast;
 
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ListSongActivity extends AppCompatActivity {
-    private ArrayList<Song> songList;
+    private List<Song> songList;
     private ListView lvBaiHat;
     private SongAdapter adapter;
     @Override

@@ -8,12 +8,13 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class SongAdapter extends BaseAdapter {
     private Context context;
-    private ArrayList<Song> objects;
+    private List<Song> objects;
 
-    public SongAdapter(Context context, ArrayList<Song> objects) {
+    public SongAdapter(Context context, List<Song> objects) {
         this.context = context;
         this.objects = objects;
     }

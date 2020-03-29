@@ -18,6 +18,7 @@ public class PlayMusicService extends Service implements MediaPlayer.OnPreparedL
 
     private final IBinder musicBind = new MusicBinder();
     OnCompletePlayMusic onCompletePlayMusic;
+    OnPlayMusic onPlayMusic;
 
     MediaPlayer mediaPlayer;
 
@@ -30,6 +31,10 @@ public class PlayMusicService extends Service implements MediaPlayer.OnPreparedL
 
     public void setonCompletePlayMusic(OnCompletePlayMusic onCompletePlayMusic){
         this.onCompletePlayMusic = onCompletePlayMusic;
+    }
+
+    public void setOnPlayMusic(OnPlayMusic onPlayMusic){
+        this.onPlayMusic = onPlayMusic;
     }
 
 
@@ -70,6 +75,7 @@ public class PlayMusicService extends Service implements MediaPlayer.OnPreparedL
     public void onPrepared(MediaPlayer mp) {
         if (!mediaPlayer.isPlaying()) {
             mediaPlayer.start();
+            this.onPlayMusic.onPlayMusic();
         }
     }
 
@@ -111,7 +117,9 @@ public class PlayMusicService extends Service implements MediaPlayer.OnPreparedL
 
     @Override
     public void onDestroy() {
-        mediaPlayer.stop();
+        if(mediaPlayer != null) {
+            mediaPlayer.stop();
+        }
         super.onDestroy();
     }
 }

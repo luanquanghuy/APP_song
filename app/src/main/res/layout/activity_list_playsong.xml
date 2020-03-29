@@ -80,7 +80,6 @@
                 android:layout_height="wrap_content"/>
         </LinearLayout>
         <ImageButton
-            android:onClick="presong"
             android:layout_weight="1"
             android:id="@+id/pre"
             android:background="@null"

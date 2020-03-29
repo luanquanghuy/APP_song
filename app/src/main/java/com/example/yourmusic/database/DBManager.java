@@ -8,13 +8,12 @@ import android.database.sqlite.SQLiteDatabase;
 import com.example.yourmusic.Song;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class DBManager {
 
-    private Context context;
     private DatabaseHelper databaseHelper;
     public DBManager(Context context) {
-        this.context = context;
         databaseHelper = new DatabaseHelper(context);
     }
 
@@ -32,15 +31,15 @@ public class DBManager {
         db.close();
     }
 
-    public ArrayList getAllSong() {
-        ArrayList<Song>  songList = new ArrayList<>();
+    public List getAllSong() {
+        List<Song>  songList = new ArrayList<>();
         String query = "SELECT * FROM " + DatabaseHelper.TABLE_NAME;
 
         SQLiteDatabase db = databaseHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery(query, null);
         cursor.moveToFirst();
 
-        while(cursor.isAfterLast() == false) {
+        while(!cursor.isAfterLast()) {
             Song song = new Song(cursor.getLong(0), cursor.getString(1), cursor.getString(2), cursor.getString(3));
             songList.add(song);
             cursor.moveToNext();

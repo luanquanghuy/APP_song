@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class PlaySongActivity extends AppCompatActivity {
@@ -44,10 +45,15 @@ public class PlaySongActivity extends AppCompatActivity {
     private void init() {
         Bundle getSongPicked = getIntent().getBundleExtra("songpick");
         if (getSongPicked == null) {
+            finish();
             return;
         }
         handler = new Handler(getMainLooper());
         dataSongs = (DataSongs) getSongPicked.getSerializable("baihat");
+        if(dataSongs == null){
+            finish();
+            return;
+        }
         Song songPicked;
         songPicked = dataSongs.getDsBaiHat().get(dataSongs.getIdBH());
         seekBar = findViewById(R.id.seekbar);
@@ -60,30 +66,6 @@ public class PlaySongActivity extends AppCompatActivity {
         txtName.setText(songPicked.getTitle());
         txtCaSi.setText(songPicked.getArtist());
 
-
-        threadPlay = new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                while (!stop.get()) {
-                    try {
-                        Thread.sleep(1000);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                    seekBar.setProgress((int) ((double) playMusicService.getCurrentPosition() / (double) playMusicService.getDuration() * 100));
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            txtCurrent.setText(((playMusicService.getCurrentPosition() / 1000) / 60) + ":" + String.format("%02d", (playMusicService.getCurrentPosition() / 1000) % 60));
-                            txtDuration.setText(((playMusicService.getDuration() / 1000) / 60) + ":" + (String.format("%02d", (playMusicService.getDuration() / 1000) % 60)));
-                        }
-                    });
-                }
-            }
-        });
-
-        ///
         if (!serviceBound) {
             Intent intent = new Intent(PlaySongActivity.this, PlayMusicService.class);
             intent.setAction(PlayMusicService.ACTION_PLAY);
@@ -91,7 +73,6 @@ public class PlaySongActivity extends AppCompatActivity {
             startService(intent);
             ((ImageButton) findViewById(R.id.play)).setImageResource(R.drawable.pause_64);
             bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
-            threadPlay.start();
         }
 
     }
@@ -106,14 +87,30 @@ public class PlaySongActivity extends AppCompatActivity {
                 public void setOnCompletePlayMusic() {
                     if (isReapet) {
                         playMusicService.changeMusic(Uri.parse(dataSongs.getDsBaiHat().get(dataSongs.getIdBH()).getUri()));
-                    } else {
+                    } else if (!stop.get()) {
                         if (dataSongs.getIdBH() >= dataSongs.getDsBaiHat().size() - 1) {
                             dataSongs.setIdBH(0);
                         } else {
                             dataSongs.setIdBH(dataSongs.getIdBH() + 1);
                         }
                         changeBH();
+
+                    } else {
+                        isPlaying = false;
                     }
+                }
+            });
+            playMusicService.setOnPlayMusic(new OnPlayMusic() {
+                @Override
+                public void onPlayMusic() {
+                    threadPlay = new Thread(new PlayThread());
+                    stop.set(false);
+                    if(!isPlaying) {
+                        changeBH();
+                    }
+                    threadPlay.start();
+                    ((ImageButton) findViewById(R.id.play)).setImageResource(R.drawable.pause_64);
+                    isPlaying = true;
                 }
             });
             serviceBound = true;
@@ -134,6 +131,12 @@ public class PlaySongActivity extends AppCompatActivity {
         if (isPlaying) {
             ((ImageButton) view).setImageResource(R.drawable.play);
         } else {
+            if (stop.get()) {
+                threadPlay = new Thread(new PlayThread());
+                stop.set(false);
+                changeBH();
+                threadPlay.start();
+            }
             ((ImageButton) view).setImageResource(R.drawable.pause_64);
         }
         isPlaying = !isPlaying;
@@ -155,6 +158,7 @@ public class PlaySongActivity extends AppCompatActivity {
         } else {
             dataSongs.setIdBH(dataSongs.getIdBH() - 1);
         }
+        changeBH();
     }
 
     private void changeBH() {
@@ -177,5 +181,31 @@ public class PlaySongActivity extends AppCompatActivity {
     public void stopsong(View view) {
         playMusicService.stopMusic();
         stop.set(true);
+        if (isPlaying) {
+            isPlaying = false;
+            ((ImageButton) findViewById(R.id.play)).setImageResource(R.drawable.play);
+        }
+    }
+
+    class PlayThread implements Runnable {
+
+        @Override
+        public void run() {
+            while (!stop.get()) {
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                seekBar.setProgress((int) ((double) playMusicService.getCurrentPosition() / (double) playMusicService.getDuration() * 100));
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        txtCurrent.setText(((playMusicService.getCurrentPosition() / 1000) / 60) + ":" + String.format("%02d", (playMusicService.getCurrentPosition() / 1000) % 60));
+                        txtDuration.setText(((playMusicService.getDuration() / 1000) / 60) + ":" + (String.format("%02d", (playMusicService.getDuration() / 1000) % 60)));
+                    }
+                });
+            }
+        }
     }
 }
