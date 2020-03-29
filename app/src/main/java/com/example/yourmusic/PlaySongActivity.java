@@ -192,11 +192,6 @@ public class PlaySongActivity extends AppCompatActivity {
         @Override
         public void run() {
             while (!stop.get()) {
-                try {
-                    Thread.sleep(1000);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
                 seekBar.setProgress((int) ((double) playMusicService.getCurrentPosition() / (double) playMusicService.getDuration() * 100));
                 handler.post(new Runnable() {
                     @Override
@@ -205,6 +200,11 @@ public class PlaySongActivity extends AppCompatActivity {
                         txtDuration.setText(((playMusicService.getDuration() / 1000) / 60) + ":" + (String.format("%02d", (playMusicService.getDuration() / 1000) % 60)));
                     }
                 });
+                try {
+                    Thread.sleep(1000);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
             }
         }
     }
