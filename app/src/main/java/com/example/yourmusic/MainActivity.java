@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
 
     public ArrayList<Song> getSongList(){
         ArrayList list = new ArrayList<Song>();
-        //query external audio
+        //query z audio
         ContentResolver musicResolver = getContentResolver();
         Uri musicUri = MediaStore.Audio.Media.EXTERNAL_CONTENT_URI;
         Cursor musicCursor = musicResolver.query(musicUri, null, null, null, null);

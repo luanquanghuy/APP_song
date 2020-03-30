@@ -11,10 +11,15 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
+
+import com.example.yourmusic.event.OnCompletePlayMusic;
+import com.example.yourmusic.event.OnPlayMusic;
+import com.example.yourmusic.event.OnStopMusic;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -85,26 +90,32 @@ public class PlaySongActivity extends AppCompatActivity {
             playMusicService.setonCompletePlayMusic(new OnCompletePlayMusic() {
                 @Override
                 public void setOnCompletePlayMusic() {
+                    Log.d("LQH_ON_COMPLETE", "complete");
                     if (isReapet) {
                         playMusicService.changeMusic(Uri.parse(dataSongs.getDsBaiHat().get(dataSongs.getIdBH()).getUri()));
-                    } else if (!stop.get()) {
+                    } else if (isPlaying) {
                         if (dataSongs.getIdBH() >= dataSongs.getDsBaiHat().size() - 1) {
                             dataSongs.setIdBH(0);
                         } else {
                             dataSongs.setIdBH(dataSongs.getIdBH() + 1);
                         }
                         changeBH();
-
-                    } else {
-                        isPlaying = false;
                     }
                 }
             });
+
+            playMusicService.setOnStopMusic(new OnStopMusic() {
+                @Override
+                public void onStopMusic() {
+                }
+            });
+
             playMusicService.setOnPlayMusic(new OnPlayMusic() {
                 @Override
                 public void onPlayMusic() {
-                    threadPlay = new Thread(new PlayThread());
+                    Log.d("LQH_ON_PLAY", "play");
                     stop.set(false);
+                    threadPlay = new Thread(new PlayThread());
                     if(!isPlaying) {
                         changeBH();
                     }

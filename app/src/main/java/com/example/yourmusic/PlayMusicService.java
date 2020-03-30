@@ -7,9 +7,13 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
 import android.os.IBinder;
-import android.widget.Toast;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
+
+import com.example.yourmusic.event.OnCompletePlayMusic;
+import com.example.yourmusic.event.OnPlayMusic;
+import com.example.yourmusic.event.OnStopMusic;
 
 import java.io.IOException;
 
@@ -19,6 +23,7 @@ public class PlayMusicService extends Service implements MediaPlayer.OnPreparedL
     private final IBinder musicBind = new MusicBinder();
     OnCompletePlayMusic onCompletePlayMusic;
     OnPlayMusic onPlayMusic;
+    OnStopMusic onStopMusic;
 
     MediaPlayer mediaPlayer;
 
@@ -26,6 +31,7 @@ public class PlayMusicService extends Service implements MediaPlayer.OnPreparedL
 
     @Override
     public void onCompletion(MediaPlayer mp) {
+        Log.d("LQH_MP", " " + mp.isPlaying());
         onCompletePlayMusic.setOnCompletePlayMusic();
     }
 
@@ -35,6 +41,10 @@ public class PlayMusicService extends Service implements MediaPlayer.OnPreparedL
 
     public void setOnPlayMusic(OnPlayMusic onPlayMusic){
         this.onPlayMusic = onPlayMusic;
+    }
+
+    public void setOnStopMusic(OnStopMusic onStopMusic){
+        this.onStopMusic = onStopMusic;
     }
 
 
@@ -57,7 +67,7 @@ public class PlayMusicService extends Service implements MediaPlayer.OnPreparedL
             mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
             mediaPlayer.setOnPreparedListener(this);
             mediaPlayer.setOnCompletionListener(this);
-            mediaPlayer.reset();
+//            mediaPlayer.reset();
             try {
                 Uri uri = intent.getData();
                 mediaPlayer.setDataSource(this, uri);
@@ -104,6 +114,7 @@ public class PlayMusicService extends Service implements MediaPlayer.OnPreparedL
         if (mediaPlayer == null) return;
         if (mediaPlayer.isPlaying()) {
             mediaPlayer.stop();
+            this.onStopMusic.onStopMusic();
         }
     }
 
