@@ -5,6 +5,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Intent;
@@ -36,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
         window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
         window.setStatusBarColor(ContextCompat.getColor(MainActivity.this, R.color.transparent));
 
+        createNotificationChannel();
         dbManager = new DBManager(getApplicationContext());
 
         if (isReadStoragePermissionGranted()){
@@ -114,5 +117,24 @@ public class MainActivity extends AppCompatActivity {
             }while (musicCursor.moveToNext());
         }
         return list;
+    }
+
+    private void createNotificationChannel() {
+        // Create the NotificationChannel, but only on API 26+ because
+        // the NotificationChannel class is new and not in the support library
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            CharSequence name = "CHANNEL_NAME";
+            String description = "channel_description";
+            int importance = NotificationManager.IMPORTANCE_LOW;
+            NotificationChannel channel = new NotificationChannel("CHANNEL_ID123456", name, importance);
+            channel.setDescription(description);
+            NotificationManager notificationManager = getSystemService(NotificationManager.class);
+            if(notificationManager.getNotificationChannel("CHANNEL_ID123456") == null) {
+                Log.d("LQH_NOTIMN", "Chưa tạo channel");
+                notificationManager.createNotificationChannel(channel);
+            } else {
+                Log.d("LQH_NOTIMN", "Đã tạo channel");
+            }
+        }
     }
 }

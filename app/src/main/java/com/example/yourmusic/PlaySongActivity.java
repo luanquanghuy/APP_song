@@ -17,7 +17,7 @@ import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.example.yourmusic.event.OnCompletePlayMusic;
+import com.example.yourmusic.event.OnChangeSong;
 import com.example.yourmusic.event.OnPlayMusic;
 import com.example.yourmusic.event.OnStopMusic;
 
@@ -55,7 +55,7 @@ public class PlaySongActivity extends AppCompatActivity {
         }
         handler = new Handler(getMainLooper());
         dataSongs = (DataSongs) getSongPicked.getSerializable("baihat");
-        if(dataSongs == null){
+        if (dataSongs == null) {
             finish();
             return;
         }
@@ -75,6 +75,7 @@ public class PlaySongActivity extends AppCompatActivity {
             Intent intent = new Intent(PlaySongActivity.this, PlayMusicService.class);
             intent.setAction(PlayMusicService.ACTION_PLAY);
             intent.setData(Uri.parse(songPicked.getUri()));
+            intent.putExtra("songpick", getSongPicked);
             startService(intent);
             ((ImageButton) findViewById(R.id.play)).setImageResource(R.drawable.pause_64);
             bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE);
@@ -87,43 +88,42 @@ public class PlaySongActivity extends AppCompatActivity {
         public void onServiceConnected(ComponentName name, IBinder service) {
             PlayMusicService.MusicBinder binder = (PlayMusicService.MusicBinder) service;
             playMusicService = binder.getService();
-            playMusicService.setonCompletePlayMusic(new OnCompletePlayMusic() {
+            playMusicService.setOnChangeSongMusic(new OnChangeSong() {
                 @Override
-                public void setOnCompletePlayMusic() {
-                    Log.d("LQH_ON_COMPLETE", "complete");
-                    if (isReapet) {
-                        playMusicService.changeMusic(Uri.parse(dataSongs.getDsBaiHat().get(dataSongs.getIdBH()).getUri()));
-                    } else if (isPlaying) {
-                        if (dataSongs.getIdBH() >= dataSongs.getDsBaiHat().size() - 1) {
-                            dataSongs.setIdBH(0);
-                        } else {
-                            dataSongs.setIdBH(dataSongs.getIdBH() + 1);
-                        }
-                        changeBH();
+                public void changeSong() {
+                    Song songCurrent = playMusicService.getSongCurrent();
+                    txtName.setText(songCurrent.getTitle());
+                    txtCaSi.setText(songCurrent.getArtist());
+                    Log.d("LQH_ON_PLAY", "play");
+                    if (stop.get()) {
+                        stop.set(false);
+                        threadPlay = new Thread(new PlayThread());
+                        threadPlay.start();
                     }
+                    ((ImageButton) findViewById(R.id.play)).setImageResource(R.drawable.pause_64);
+                    isPlaying = true;
                 }
             });
 
             playMusicService.setOnStopMusic(new OnStopMusic() {
                 @Override
                 public void onStopMusic() {
+                    stop.set(true);
+                    isPlaying = false;
                 }
             });
 
             playMusicService.setOnPlayMusic(new OnPlayMusic() {
                 @Override
-                public void onPlayMusic() {
-                    Log.d("LQH_ON_PLAY", "play");
-                    stop.set(false);
-                    threadPlay = new Thread(new PlayThread());
-                    if(!isPlaying) {
-                        changeBH();
-                    }
-                    threadPlay.start();
-                    ((ImageButton) findViewById(R.id.play)).setImageResource(R.drawable.pause_64);
-                    isPlaying = true;
+                public void onPlayMusic(boolean play) {
+                    isPlaying = play;
+                    ((ImageButton) findViewById(R.id.play)).setImageResource(play ? R.drawable.pause_64 : R.drawable.play);
                 }
             });
+
+            threadPlay = new Thread(new PlayThread());
+            threadPlay.start();
+            isPlaying = true;
             serviceBound = true;
         }
 
@@ -135,67 +135,49 @@ public class PlaySongActivity extends AppCompatActivity {
 
     public void back(View view) {
         playMusicService.stopSelf();
+        stop.set(true);
         finish();
-    }
-
-    public void plsong(View view) {
-        if (isPlaying) {
-            ((ImageButton) view).setImageResource(R.drawable.play);
-        } else {
-            if (stop.get()) {
-                threadPlay = new Thread(new PlayThread());
-                stop.set(false);
-                changeBH();
-                threadPlay.start();
-            }
-            ((ImageButton) view).setImageResource(R.drawable.pause_64);
-        }
-        isPlaying = !isPlaying;
-        playMusicService.pauseMusic();
-    }
-
-    public void nextsong(View view) {
-        if (dataSongs.getIdBH() >= dataSongs.getDsBaiHat().size() - 1) {
-            dataSongs.setIdBH(0);
-        } else {
-            dataSongs.setIdBH(dataSongs.getIdBH() + 1);
-        }
-        changeBH();
-    }
-
-    public void presong(View view) {
-        if (dataSongs.getIdBH() <= 0) {
-            dataSongs.setIdBH(dataSongs.getDsBaiHat().size() - 1);
-        } else {
-            dataSongs.setIdBH(dataSongs.getIdBH() - 1);
-        }
-        changeBH();
-    }
-
-    private void changeBH() {
-        Song songPicked = dataSongs.getDsBaiHat().get(dataSongs.getIdBH());
-        txtName.setText(songPicked.getTitle());
-        txtCaSi.setText(songPicked.getArtist());
-        playMusicService.changeMusic(Uri.parse(dataSongs.getDsBaiHat().get(dataSongs.getIdBH()).getUri()));
     }
 
     public void repeat(View view) {
         if (isReapet) {
             isReapet = false;
+            playMusicService.loop(false);
             view.setBackgroundColor(Color.TRANSPARENT);
         } else {
             isReapet = true;
+            playMusicService.loop(true);
             view.setBackgroundColor(Color.GRAY);
         }
     }
 
     public void stopsong(View view) {
-        playMusicService.stopMusic();
-        stop.set(true);
+        Intent intent = new Intent(PlaySongActivity.this, PlayMusicService.class);
+        intent.setAction(PlayMusicService.ACTION_STOP);
+        startService(intent);
+        ((ImageButton) findViewById(R.id.play)).setImageResource(R.drawable.play);
+    }
+
+    public void presong(View view) {
+        Intent intent = new Intent(PlaySongActivity.this, PlayMusicService.class);
+        intent.setAction(PlayMusicService.ACTION_PREVIOUS);
+        startService(intent);
+    }
+
+    public void plsong(View view) {
+        Intent intent = new Intent(PlaySongActivity.this, PlayMusicService.class);
         if (isPlaying) {
-            isPlaying = false;
-            ((ImageButton) findViewById(R.id.play)).setImageResource(R.drawable.play);
+            intent.setAction(PlayMusicService.ACTION_PAUSE);
+        } else {
+            intent.setAction(PlayMusicService.ACTION_PLAY);
         }
+        startService(intent);
+    }
+
+    public void nextsong(View view) {
+        Intent intent = new Intent(PlaySongActivity.this, PlayMusicService.class);
+        intent.setAction(PlayMusicService.ACTION_NEXT);
+        startService(intent);
     }
 
     class PlayThread implements Runnable {
@@ -203,14 +185,18 @@ public class PlaySongActivity extends AppCompatActivity {
         @Override
         public void run() {
             while (!stop.get()) {
-                seekBar.setProgress((int) ((double) playMusicService.getCurrentPosition() / (double) playMusicService.getDuration() * 100));
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        txtCurrent.setText(((playMusicService.getCurrentPosition() / 1000) / 60) + ":" + String.format("%02d", (playMusicService.getCurrentPosition() / 1000) % 60));
-                        txtDuration.setText(((playMusicService.getDuration() / 1000) / 60) + ":" + (String.format("%02d", (playMusicService.getDuration() / 1000) % 60)));
-                    }
-                });
+                final int current = playMusicService.getCurrentPosition();
+                final int duration = playMusicService.getDuration();
+                if (current != -1 && duration != -1) {
+                    seekBar.setProgress((int) ((double) current / (double) duration * 100));
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            txtCurrent.setText(((current / 1000) / 60) + ":" + String.format("%02d", (current / 1000) % 60));
+                            txtDuration.setText(((duration / 1000) / 60) + ":" + (String.format("%02d", (duration / 1000) % 60)));
+                        }
+                    });
+                }
                 try {
                     Thread.sleep(1000);
                 } catch (Exception ex) {
